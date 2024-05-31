@@ -34,6 +34,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/shoes", async (req, res) => {
+      const shoesData = shoesCollection.find();
+      console.log(shoesData);
+      const result = await shoesData.toArray();
+      res.send(result);
+    });
+
     console.log(" You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
