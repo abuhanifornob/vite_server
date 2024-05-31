@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
-const port = 3001;
+const port = 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -36,8 +36,30 @@ async function run() {
 
     app.get("/shoes", async (req, res) => {
       const shoesData = shoesCollection.find();
-      console.log(shoesData);
       const result = await shoesData.toArray();
+      res.send(result);
+    });
+
+    app.get("/shoe/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await shoesCollection.findOne({ _id: new ObjectId(id) });
+      res.send(result);
+    });
+
+    app.patch("/shoe/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const result = await shoesCollection.updateOne(filter, {
+        $set: updateData,
+      });
+      res.send(result);
+    });
+
+    app.delete("/shoe/:id", async (req, res) => {
+      const id = req.params.id;
+      const quary = { _id: new ObjectId(id) };
+      const result = await shoesCollection.deleteOne(quary);
       res.send(result);
     });
 
@@ -48,7 +70,9 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
+app.get("/", (req, res) => {
+  res.send("App is Running");
+});
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
