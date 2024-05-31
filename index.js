@@ -24,38 +24,23 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const userDB = client.db("userDB");
-    const userCollection = userDB.collection("userCollection");
-    app.post("/user", async (req, res) => {
-      const user = req.body;
-      const result = await userCollection.insertOne(user);
-      console.log(result);
+    const productDB = client.db("productDB");
+    const shoesCollection = productDB.collection("shoesCollection");
+    // Add products
+    app.post("/shoes", async (req, res) => {
+      const shoe = req.body;
+      console.log(shoe);
+      const result = await shoesCollection.insertOne(shoe);
+      res.send(result);
     });
 
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    console.log(" You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
   }
 }
 run().catch(console.dir);
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-app.get("/users", (req, res) => {
-  const user = {
-    name: "Abu hanif",
-    id: "624",
-    contact: "01716203929",
-  };
-  res.send(user);
-});
-app.get("/admin", (req, res) => {
-  res.send("This is Admin Panel, ");
-});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
