@@ -26,10 +26,12 @@ async function run() {
 
     const productDB = client.db("productDB");
     const shoesCollection = productDB.collection("shoesCollection");
+    const userInfoDB = client.db("userInfoDB");
+    const userInfoCollection = userInfoDB.collection("UserInfoCollection");
     // Add products
     app.post("/shoes", async (req, res) => {
       const shoe = req.body;
-      console.log(shoe);
+
       const result = await shoesCollection.insertOne(shoe);
       res.send(result);
     });
@@ -61,6 +63,21 @@ async function run() {
       const quary = { _id: new ObjectId(id) };
       const result = await shoesCollection.deleteOne(quary);
       res.send(result);
+    });
+
+    // User Information;
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const email = user?.email;
+      const isUserExists = await userInfoCollection.findOne({ email: email });
+      if (isUserExists?._id) {
+        res.send({
+          status: "success",
+          message: "Login Successful",
+        });
+      }
+      const resut = await userInfoCollection.insertOne(user);
+      res.send(resut);
     });
 
     console.log(" You successfully connected to MongoDB!");
