@@ -69,15 +69,37 @@ async function run() {
     app.post("/users", async (req, res) => {
       const user = req.body;
       const email = user?.email;
-      const isUserExists = await userInfoCollection.findOne({ email: email });
-      if (isUserExists?._id) {
+      const isUserExists = await userInfoCollection.findOne({ email });
+      if (isUserExists) {
         res.send({
           status: "success",
           message: "Login Successful",
         });
+      } else {
+        const resut = await userInfoCollection.insertOne(user);
+        res.send(resut);
       }
-      const resut = await userInfoCollection.insertOne(user);
-      res.send(resut);
+    });
+    app.get("/users/get/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await userInfoCollection.findOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
+    app.patch("/users/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateDoc = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const result = await userInfoCollection.updateOne(filter, {
+        $set: updateDoc,
+      });
+      res.send(result);
+    });
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await userInfoCollection.findOne({ email });
+      res.send(result);
     });
 
     console.log(" You successfully connected to MongoDB!");
